@@ -7,14 +7,19 @@ QuantGenesis est un projet de recherche et de démonstration pour l’analyse d�
 - Collecte de données de marché et d’actualités
 - Calcul de features techniques
 - Prédiction de tendance avec PyTorch et MLflow
-- Analyse enrichie avec RAG, FAISS et un modèle LLM via Ollama
+- Analyse enrichie avec LangChain, RAG, FAISS et un modèle LLM via Ollama
+- Intégration de modèles issus de l’écosystème Hugging Face
+- Stockage et interrogation de données via SQL / SQLite
 - Interface interactive avec Streamlit
 
 ## Architecture
 
-- Data pipeline : collecte des prix et des actualités, stockage SQLite
-- Machine learning : entraînement et inférence de modèle de classification
+- Data pipeline : collecte des prix et des actualités, stockage SQL / SQLite
+- Machine learning : entraînement et inférence de modèle de classification avec PyTorch
 - RAG : embeddings, index FAISS, récupération de documents pertinents
+- LLM orchestration : LangChain et Ollama
+- MLOps : suivi d’expériences avec MLflow
+- Déploiement : conteneurisation avec Docker
 - Interface : application Streamlit
 
 ## Prérequis
