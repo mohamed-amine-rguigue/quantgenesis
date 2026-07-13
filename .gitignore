@@ -19,6 +19,8 @@ env/
 faiss_index/
 models/
 .streamlit/
+mlruns/
+mlartifacts/
 
 # Logs
 *.log
