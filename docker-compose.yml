@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quantgenesis-streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=mistral
+      - SQLITE_DB_PATH=/data/quantgenesis.db
+      - FAISS_INDEX_PATH=/data/faiss_index
+      - MODEL_PATH=/data/models/trend_classifier.pt
+      - SCALER_PATH=/data/models/scaler.pkl
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    volumes:
+      - quantgenesis-data:/data
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./ml:/app/ml
+      - ./rag:/app/rag
+    depends_on:
+      - ollama
+      - mlflow
+    restart: unless-stopped
+    networks:
+      - quantgenesis-net
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: quantgenesis-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        sleep 5
+        ollama pull mistral || echo "Modèle déjà présent"
+        wait
+    restart: unless-stopped
+    networks:
+      - quantgenesis-net
+
+  mlflow:
+    image: python:3.11-slim
+    container_name: quantgenesis-mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-data:/mlruns
+    command: >
+      bash -c "pip install --quiet mlflow==2.13.2 &&
+               mlflow server --host 0.0.0.0 --port 5000
+               --backend-store-uri /mlruns --default-artifact-root /mlruns"
+    restart: unless-stopped
+    networks:
+      - quantgenesis-net
+
+volumes:
+  quantgenesis-data:
+  ollama-models:
+  mlflow-data:
+
+networks:
+  quantgenesis-net:
+    driver: bridge

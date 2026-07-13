@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local app/runtime data
+*.db
+*.sqlite3
+faiss_index/
+models/
+.streamlit/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
