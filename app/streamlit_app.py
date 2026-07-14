@@ -100,7 +100,10 @@ def predict_trend(features_df, model, scaler):
         probas_t, classe_t = model.predict(x)
         probas = probas_t[0].tolist()
         classe = int(classe_t[0].item())
-        return classe, probas, probas[classe]
+        bull_prob = probas[2] if len(probas) > 2 else 0.0
+        bear_prob = probas[0] if len(probas) > 0 else 0.0
+        ml_signal_score = 50.0 + 50.0 * (bull_prob - bear_prob)
+        return classe, probas, ml_signal_score
     except Exception as e:
         logger.error(f"Erreur inférence : {e}")
         return 1, [0.25, 0.40, 0.35], 0.40

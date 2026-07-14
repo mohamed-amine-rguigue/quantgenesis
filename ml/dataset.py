@@ -27,6 +27,10 @@ class StockDataset(Dataset):
 
 def build_datasets(df: pd.DataFrame, val_ratio=0.2, scaler_path="models/scaler.pkl",
                    fit_scaler=True):
+    df = df.copy()
+    if "date" in df.columns:
+        df = df.sort_values("date").reset_index(drop=True)
+
     X = df[FEATURE_COLS].values.astype(np.float32)
     y = df[LABEL_COL].values.astype(np.int64)
     valid_mask = ~(np.isnan(X).any(axis=1) | np.isnan(y))
@@ -51,6 +55,24 @@ def build_datasets(df: pd.DataFrame, val_ratio=0.2, scaler_path="models/scaler.p
 
     logger.info(f"Train: {len(X_train)} | Val: {len(X_val)}")
     return StockDataset(X_train, y_train), StockDataset(X_val, y_val), scaler
+
+
+def build_datasets_from_frames(train_df: pd.DataFrame, test_df: pd.DataFrame,
+                               scaler_path="models/scaler.pkl", save_scaler=True):
+    X_train = train_df[FEATURE_COLS].values.astype(np.float32)
+    y_train = train_df[LABEL_COL].values.astype(np.int64)
+    X_test = test_df[FEATURE_COLS].values.astype(np.float32)
+    y_test = test_df[LABEL_COL].values.astype(np.int64)
+
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    if save_scaler:
+        os.makedirs(os.path.dirname(scaler_path) or "models", exist_ok=True)
+        with open(scaler_path, "wb") as f:
+            pickle.dump(scaler, f)
+
+    return StockDataset(X_train, y_train), StockDataset(X_test, y_test), scaler
 
 
 def prepare_inference_input(df: pd.DataFrame, scaler: StandardScaler) -> torch.Tensor:

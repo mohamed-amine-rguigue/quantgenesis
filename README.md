@@ -22,6 +22,17 @@ QuantGenesis est un projet de recherche et de démonstration pour l’analyse d�
 - Déploiement : conteneurisation avec Docker
 - Interface : application Streamlit
 
+## Méthodologie d’évaluation
+
+Le modèle doit être évalué de manière temporelle, et non avec un split aléatoire, car il s’agit de séries financières. En pratique, il est préférable de :
+
+- entraîner sur une période passée et valider sur une période suivante,
+- répéter l’évaluation sur plusieurs fenêtres temporelles,
+- comparer les performances à une baseline simple,
+- vérifier que les features et les actualités utilisées ne contiennent pas d’information future.
+
+Cette approche est plus fidèle à un usage réel et permet d’évaluer si le modèle généralise sur différents contextes de marché.
+
 ## Prérequis
 
 - Python 3.10+
